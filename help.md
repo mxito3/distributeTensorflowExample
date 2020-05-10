@@ -1,6 +1,6 @@
 git clone https://github.com/mxito3/distributeTensorflowExample && cd distributeTensorflowExample
 
-sudo apt install software-properties-common && sudo add-apt-repository ppa:deadsnakes/ppa && sudo apt update && sudo apt install python3.7 && sudo apt install python3.7-dev && sudo apt install python3.7-venv
+apt install software-properties-common && add-apt-repository ppa:deadsnakes/ppa && apt update && apt install python3.7 &&  apt install python3.7-dev && apt install python3.7-venv
 
 python3.7 -m venv venv && source venv/bin/activate && pip install tensorflow
 
