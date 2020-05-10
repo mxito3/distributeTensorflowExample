@@ -33,9 +33,9 @@ def main(_):
   if FLAGS.job_name == "ps":
     server.join()
   elif FLAGS.job_name == "worker":
-    with tf.device(tf.train.replica_device_setter(
-                    worker_device="/job:worker/task:%d" % FLAGS.task_index,
-                    cluster=cluster)):
+    # with tf.device(tf.train.replica_device_setter(
+    #                 worker_device="/job:worker/task:%d" % FLAGS.task_index,
+    #                 cluster=cluster)):
       global_step = tf.Variable(0, name='global_step', trainable=False)
 
       input = tf.placeholder("float")
