@@ -38,43 +38,44 @@ def main(_):
     #                 worker_device="/job:worker/task:%d" % FLAGS.task_index,
     #                 cluster=cluster)):
 
-    global_step = tf.Variable(0, name='global_step', trainable=False)
+    with tf.device('/cpu:0'):
+      global_step = tf.Variable(0, name='global_step', trainable=False)
 
-    input = tf.placeholder("float")
-    label = tf.placeholder("float")
+      input = tf.placeholder("float")
+      label = tf.placeholder("float")
 
-    weight = tf.get_variable("weight", [1], tf.float32, initializer=tf.random_normal_initializer())
-    biase  = tf.get_variable("biase", [1], tf.float32, initializer=tf.random_normal_initializer())
-    pred = tf.multiply(input, weight) + biase
+      weight = tf.get_variable("weight", [1], tf.float32, initializer=tf.random_normal_initializer())
+      biase  = tf.get_variable("biase", [1], tf.float32, initializer=tf.random_normal_initializer())
+      pred = tf.multiply(input, weight) + biase
 
-    loss_value = loss(label, pred)
-    optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+      loss_value = loss(label, pred)
+      optimizer = tf.train.GradientDescentOptimizer(learning_rate)
 
-    grads_and_vars = optimizer.compute_gradients(loss_value)
-    if issync == 1:
-      #同步模式计算更新梯度
-      rep_op = tf.train.SyncReplicasOptimizer(optimizer,
-                                              replicas_to_aggregate=len(
-                                                worker_hosts),
-                                              replica_id=FLAGS.task_index,
-                                              total_num_replicas=len(
-                                                worker_hosts),
-                                              use_locking=True)
-      train_op = rep_op.apply_gradients(grads_and_vars,
-                                      global_step=global_step)
-      init_token_op = rep_op.get_init_tokens_op()
-      chief_queue_runner = rep_op.get_chief_queue_runner()
-    else:
-      #异步模式计算更新梯度
-      train_op = optimizer.apply_gradients(grads_and_vars,
-                                      global_step=global_step)
+      grads_and_vars = optimizer.compute_gradients(loss_value)
+      if issync == 1:
+        #同步模式计算更新梯度
+        rep_op = tf.train.SyncReplicasOptimizer(optimizer,
+                                                replicas_to_aggregate=len(
+                                                  worker_hosts),
+                                                replica_id=FLAGS.task_index,
+                                                total_num_replicas=len(
+                                                  worker_hosts),
+                                                use_locking=True)
+        train_op = rep_op.apply_gradients(grads_and_vars,
+                                        global_step=global_step)
+        init_token_op = rep_op.get_init_tokens_op()
+        chief_queue_runner = rep_op.get_chief_queue_runner()
+      else:
+        #异步模式计算更新梯度
+        train_op = optimizer.apply_gradients(grads_and_vars,
+                                        global_step=global_step)
 
 
-    init_op = tf.initialize_all_variables()
-    
-    saver = tf.train.Saver()
-    tf.summary.scalar('cost', loss_value)
-    summary_op = tf.summary.merge_all()
+      init_op = tf.initialize_all_variables()
+      
+      saver = tf.train.Saver()
+      tf.summary.scalar('cost', loss_value)
+      summary_op = tf.summary.merge_all()
 
       
   sv = tf.train.Supervisor(is_chief=(FLAGS.task_index == 0),logdir="./checkpoint/",init_op=init_op,summary_op=None, saver=saver,global_step=global_step,save_model_secs=60)
