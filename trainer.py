@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 FLAGS = None
 
