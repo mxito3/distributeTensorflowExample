@@ -1,8 +1,8 @@
 import argparse
 import sys
 import  tensorflow as tf
-tf.disable_eager_execution()
-tf.disable_v2_behavior()
+# tf.disable_eager_execution()
+# tf.disable_v2_behavior()
 FLAGS = None
 
 

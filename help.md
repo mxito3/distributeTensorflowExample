@@ -2,7 +2,7 @@ git clone https://github.com/mxito3/distributeTensorflowExample && cd distribute
 
 apt install software-properties-common && add-apt-repository ppa:deadsnakes/ppa && apt update && apt install python3.7 &&  apt install python3.7-dev && apt install python3.7-venv
 
-python3.7 -m venv venv && source venv/bin/activate && pip install tensorflow
+python3.7 -m venv venv && source venv/bin/activate && pip install -r requirements.txt
 
 ps 节点执行： 
 
